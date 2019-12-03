@@ -8,11 +8,11 @@ class AlgorithmCore:
     def __init__(self, dataset, rankings):
         ed = DataLayer(dataset, rankings)
         self.dataset = ed
-        
+        #If you want to work with more than one algortihm ,This method insert methods and work with all algorihm in list and sort their result
     def InsertAlgortihm(self, algorithm, name):
         alg = BussinessLayer(algorithm, name)
         self.algorithms.append(alg)
-        
+        #This method run all algorithm in list.If doTopN is true
     def ProcessAlgorithm(self, doTopN):
         results = {}
         for algorithm in self.algorithms:

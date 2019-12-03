@@ -3,6 +3,7 @@ from surprise import Dataset,Reader
 from collections import defaultdict
 import numpy as np
 
+#This class is mainly working for load and prepare data to easily use.In this example because of choose movieLens dataset, this class developed for.If you want to work with another dataset,Modifying this class is enough
 class DataImporter:
 
     movieID_to_name = {}
@@ -34,7 +35,8 @@ class DataImporter:
 
         return ratingsDataset
  
-
+    #Because of need only popularity of Movie,I developed for popularity column
+    #Mainly this method does,firstly looped in Array and calculate rankings on popularity.And than sort list 
     def getPopularityRanks(self):
         ratings = defaultdict(int)
         rankings = defaultdict(int)
