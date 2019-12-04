@@ -1,4 +1,7 @@
 *ProcessSvd is primary file to run the program.In this case  I used SVD,SVD++ and NormalRecommender.
+	-Mainly this library work on  RootMeanSq Error ,Mean Absolute Error,Hit Rate,Cumulative Hit Rate , Average Reciprocal, Coverage ,  Diversity and Novelty.These features are good for recemmend because of cover all case of product.
 *TunningUp is used for improve algorthim to best parameters etc.
 *DataImporter is the helper for read data from all kind of csv file.If you change it for your own data file ,this program can be used .
-*BussinessLayer class is work as mediator between AlgoritmCore and ProcessSvd as insert algorthim and setting up their configuration during process 
+*BussinessLayer class is work as mediator between AlgoritmCore and ProcessSvd as insert algorthim and setting up their configuration during process .
+*AlgortihmCore is processor of all algortihm that inserted on BussinessLayer.It work with TopN with Leave One Out method that remove a product from user list and try to find it and calculate ratio.
+*RecConfigrator is work as helper class that calculate all metrics in recommendation such as Novelty RMS or MAE etc.

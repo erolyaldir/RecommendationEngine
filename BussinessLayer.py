@@ -12,7 +12,7 @@ class BussinessLayer:
     def InsertAlgortihm(self, algorithm, name):
         alg = AlgorithmCore(algorithm, name)
         self.algorithms.append(alg)
-        #This method run all algorithm in list.If doTopN is true
+        #This method run all algorithm in list.If doTopN is true 
     def ProcessAlgorithm(self, doTopN):
         results = {}
         for algorithm in self.algorithms:
