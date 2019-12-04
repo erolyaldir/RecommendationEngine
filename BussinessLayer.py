@@ -1,60 +1,65 @@
-
-from RecConfigrator import RecConfigrator
 from DataLayer import DataLayer
+from AlgorithmCore import AlgorithmCore
 
 class BussinessLayer:
     
-    def __init__(self, algorithm, name):
-        self.algorithm = algorithm
-        self.name = name
+    algorithms = []
+    
+    def __init__(self, dataset, rankings):
+        ed = DataLayer(dataset, rankings)
+        self.dataset = ed
+        #If you want to work with more than one algortihm ,This method insert methods and work with all algorihm in list and sort their result
+    def InsertAlgortihm(self, algorithm, name):
+        alg = AlgorithmCore(algorithm, name)
+        self.algorithms.append(alg)
+        #This method run all algorithm in list.If doTopN is true
+    def ProcessAlgorithm(self, doTopN):
+        results = {}
+        for algorithm in self.algorithms:
+            print("Scoring  ", algorithm.GetAlgortihmName())
+            results[algorithm.GetAlgortihmName()] = algorithm.ProcessAlgorithm(self.dataset, doTopN)
+
+        print("\n")
         
-    def ProcessAlgorithm(self, evaluationData, doTopN, n=10, verbose=True):
-        metrics = {} 
-        if (verbose):
-            print("Evaluating accuracy...")
-        self.algorithm.fit(evaluationData.GetTrainSet())
-        predictions = self.algorithm.test(evaluationData.GetTestSet())
-        metrics["rootMean"] = RecConfigrator.RMSE(predictions)
-        metrics["meanAbsolute"] = RecConfigrator.MAE(predictions)
+        if (doTopN):
+            print("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format("Name Of Algoritm", "RootMeanSq Error", "Mean Absolute Error", "HitRate", "CumulativeHitRate", "Average Reciprocal", "Coverage", "Diversity", "Novelty"))
+            for (name, metrics) in results.items():
+                print("{:<10} {:<10.4f} {:<10.4f} {:<10.4f} {:<10.4f} {:<10.4f} {:<10.4f} {:<10.4f} {:<10.4f}".format(name, metrics["rootMean"], metrics["meanAbsolute"], metrics["hitRate"], metrics["cumulativeHitRate"], metrics["averageReciprocal"],metrics["coverage"], metrics["diversity"], metrics["novelty"]))
+        else:
+            print("{:<10} {:<10} {:<10}".format("Algorithm", "RMSE", "MAE"))
+            for (name, metrics) in results.items():
+                print("{:<10} {:<10.4f} {:<10.4f}".format(name, metrics["RMSE"], metrics["MAE"]))
+                
+     
         
-        if (doTopN): 
-            if (verbose):
-                print("Evaluating top-N with leave-one-out...")
-            self.algorithm.fit(evaluationData.GetLOOCVTrainSet())
-            leftOutPredictions = self.algorithm.test(evaluationData.GetLOOCVTestSet())     
-            allPredictions = self.algorithm.test(evaluationData.GetLOOCVAntiTestSet()) 
-            topNPredicted = RecConfigrator.GetTopN(allPredictions, n)
-            if (verbose):
-                print("Computing hit-rate and rank metrics...") 
-            metrics["hitRate"] = RecConfigrator.HitRate(topNPredicted, leftOutPredictions)    
-            metrics["cumulativeHitRate"] = RecConfigrator.CumulativeHitRate(topNPredicted, leftOutPredictions) 
-            metrics["averageReciprocal"] = RecConfigrator.AverageReciprocalHitRank(topNPredicted, leftOutPredictions)
-         
-            if (verbose):
-                print("Computing recommendations with full data set...")
-            self.algorithm.fit(evaluationData.GetFullTrainSet())
-            allPredictions = self.algorithm.test(evaluationData.GetFullAntiTestSet())
-            topNPredicted = RecConfigrator.GetTopN(allPredictions, n)
-            if (verbose):
-                print("Analyzing coverage, diversity, and novelty...") 
-            metrics["coverage"] = RecConfigrator.UserCoverage(  topNPredicted, 
-                                                                   evaluationData.GetFullTrainSet().n_users, 
-                                                                   ratingThreshold=4.0)
-             
-            metrics["diversity"] = RecConfigrator.Diversity(topNPredicted, evaluationData.GetSimilarities())
+    def SampleTopNRecs(self, ml, testSubject=85, k=10):
+        
+        for algo in self.algorithms:
+            print("\nName of Recommendation engine", algo.GetAlgortihmName())
             
-            metrics["novelty"] = RecConfigrator.Novelty(topNPredicted, 
-                                                            evaluationData.GetPopularityRankings())
+            print("\nWaiting for recommendation Model")
+            trainSet = self.dataset.GetFullTrainSet()
+            algo.GetAlgorithmBySelf().fit(trainSet)
+            
+            print("Waiting for computing")
+            testSet = self.dataset.GetAntiTestSetForUser(testSubject)
         
-        if (verbose):
-            print("Analysis complete.")
-    
-        return metrics
-    
-    def GetAlgortihmName(self):
-        return self.name
-    
-    def GetAlgorithmBySelf(self):
-        return self.algorithm
+            predictions = algo.GetAlgorithmBySelf().test(testSet)
+            
+            recommendations = []
+            
+            print("\nResult of :")
+            for userID, movieID, actualRating, estimatedRating, _ in predictions:
+                intMovieID = int(movieID)
+                recommendations.append((intMovieID, estimatedRating))
+            
+            recommendations.sort(key=lambda x: x[1], reverse=True)
+            
+            for ratings in recommendations[:10]:
+                print(ml.getMovieName(ratings[0]), ratings[1])
+                
+
+            
+            
     
     
