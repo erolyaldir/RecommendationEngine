@@ -7,7 +7,9 @@ class AlgorithmCore:
     def __init__(self, algorithm, name):
         self.algorithm = algorithm
         self.name = name
-        
+        #This method is main for all calculation.Mainly offer Top10 recommendation.It use inserted all algorithm.
+        #Mainly create sample TopN list and try to find HitRate from it.And than calculate cumulativeHitRate.To predict user habit calculate with leave one out.
+        #After finding prediction calculate and maintance algortihm find out coverage,diversty and novelty.
     def ProcessAlgorithm(self, evaluationData, doTopN, n=10, verbose=True):
         metrics = {} 
         if (verbose):

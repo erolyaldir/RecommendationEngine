@@ -12,7 +12,12 @@ class BussinessLayer:
     def InsertAlgortihm(self, algorithm, name):
         alg = AlgorithmCore(algorithm, name)
         self.algorithms.append(alg)
-        #This method run all algorithm in list.If doTopN is true 
+        #This method run all algorithm in list.if TopN is true thats means return N count recommended items
+        #Basicly RMSE:RootMeanSquaredError shows accurcy that lower value is good result
+                #MAE:MeanAbsoluteError another error accurcy calculation that same as RMSE lower value best result
+                #Hit Rate is a calculation that similar to leave-one out cross validation.Try to estimate recommendation
+                #Novelty is that try to recommend new and popular items
+                #Diversity is used for prevent offer always time only most popular items.
     def ProcessAlgorithm(self, doTopN):
         results = {}
         for algorithm in self.algorithms:
@@ -31,7 +36,7 @@ class BussinessLayer:
                 print("{:<10} {:<10.4f} {:<10.4f}".format(name, metrics["RMSE"], metrics["MAE"]))
                 
      
-        
+        #To create sample user rating items.
     def SampleTopNRecs(self, ml, testSubject=85, k=10):
         
         for algo in self.algorithms:
